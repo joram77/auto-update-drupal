@@ -1,4 +1,4 @@
-# auto_update_drupal
+# Auto update Drupal without composer while keeping htaccess additions
 Introduction
 ----
 Auto update a Drupal site without composer in a given path. Currently via Drush 8. 
