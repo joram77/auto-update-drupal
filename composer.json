@@ -1,0 +1,15 @@
+{
+  "name": "vendor_name/package_name",
+  "description": "Auto update for Drupal sites. Retains htaccess changes, makes backups, test site after update, alert administrator.",
+  "minimum-stability": "stable",
+  "license": "LGPL v3",
+  "authors": [
+    {
+      "name": "Wethinkonline",
+      "email": "info@wethinkonline.be"
+    }
+  ],
+  "require-dev": {
+    "phpunit/phpunit": "^8"
+  },
+}
