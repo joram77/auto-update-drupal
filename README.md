@@ -8,7 +8,7 @@ Auto update a Drupal site without composer in a given path. Currently via Drush 
 Prerequisites
 ----
  Tested with Drupal 7-8, *nix OS, PHP 7.3
- - PHP installed with sqlite support
+ - PHP installed 
  - Drush 8 should be on your PATH, you can get the latest version here https://github.com/drush-ops/drush/releases
  !! Make sure you download Drush 8 as drush 9 and above only use Composer!! 
  
@@ -26,7 +26,7 @@ sudo mv drush.phar /usr/local/bin/drush .
 Usage
 ---
 ### Fire up testsite(optional)
-
+If you want to install a testsite with drush qd, you need Pthe HP sqlite extension installed & enabled.  
 Let's install a new Drupal site through drush for the sake of testing:
 Note the admin user and password displayed in the CLI output.
 
