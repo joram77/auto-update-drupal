@@ -1,25 +1,50 @@
 # Auto update Drupal without composer while keeping htaccess additions
 Introduction
 ----
-Auto update a Drupal site without composer in a given path. Currently via Drush 8. 
+Auto update a Drupal site without composer in a given path. Currently via Drush 8.  Solves the need of automatically automatically updating Drupal sites without composer, with backup, while merging htaccess &amp; robots.txt modifications after updates.
+*Applicable if your does not rely on composer managed third party libraries in the vendor folder*
 
- Solves the need of automatically automatically updating Drupal sites without composer, with backup, while merging htaccess &amp; robots.txt modifications after updates.
+
+Use cases
+---
+You are a drupal 7/8 site admin and you want to update Drupal (automatically):
+- you **do not want to use composer**, common community complaints: learning curve, memory intensive - Composer internally increases the memory_limit to 1.5G !, requires CLI knowledge, open firewall for package sources [1](https://www.drupal.org/forum/support/upgrading-drupal/2017-01-20/drupal-8-maintenance-is-a-terrible-nightmare) [2](https://www.drupal.org/project/ideas/issues/2845379) [3](https://getcomposer.org/doc/articles/troubleshooting.md#memory-limit-errors)
+- you have **no modules that rely on libraries that need updates via composer**, or you want to update these libraries manually  via [Ludwig](https://www.drupal.org/project/ludwig) [explanation](https://drupalcommerce.org/blog/49669/installing-commerce-2x-without-composer-ludwig) 
+- before upgrade you want a **backup/sql dump**
+- you want to **keep htaccess additions** after update
+
+Example use case:
+I am a Drupal 8 site admin and my website only uses a single module, the editor_file module.
+The editor_file module does not rely on third party libs in the vendor folder. I can use this method to update my site without composer.
+
+How to check for modules that rely on composer?
+----
+Get a list of your modules that are active in the Drupal GUI. 
+
+Then, check the source code for each the module and look for composer.json.
+* eg. https://git.drupalcode.org/project/editor_file
+the root does not contain a composer.json. >> Module does not require composer
+
+* eg. https://git.drupalcode.org/project/commerce/tree/8.x-2.x 
+the root contains a composer.json. >> >> Module does  require composer
+
+
 
 Prerequisites
 ----
  Tested with Drupal 7-8, *nix OS, PHP 7.3
- - PHP installed 
+ - /var/backups folder, writable (todo, we should make this folder configurable)
  - Drush 8 should be on your PATH, you can get the latest version here https://github.com/drush-ops/drush/releases
  !! Make sure you download Drush 8 as drush 9 and above only use Composer!! 
  
- Browse to https://github.com/drush-ops/drush/releases and download the drush.phar attached to the latest 8.x release.
-Install drush;
+Browse to https://github.com/drush-ops/drush/releases and download the drush.phar attached to the latest 8.x release.  
+Install drush . 
 excerpt from http://docs.drush.org/en/8.x/install/ . 
-Test your install.  
-php drush.phar core-status . 
-Rename to `drush` instead of `php drush.phar`. Destination can be anywhere on $PATH.   
+Test your install . 
+php drush.phar core-status .
+Rename to `drush` instead of `php drush.phar`. Destination can be anywhere on $PATH . 
 chmod +x drush.phar . 
-sudo mv drush.phar /usr/local/bin/drush . 
+sudo mv drush.phar /usr/local/bin/drush .
  
 
 
@@ -93,9 +118,23 @@ Many site owners face the problem that Drush overwrites .htaccess & robots.txt i
  ```
  - patchFile (not implemented yet)
  
+
+Rationale for not using composer with Drupal 8
+---
+In Drupal 7 modules that rely on external PHP libraries had to be updated manually by placin them in the module folder itself (eg.a libs subfolder) . Or by using the libraries API placing them in sites/all/libraries or sites/sitename/libraries [D7 libraries docs](https://www.drupal.org/docs/7/modules/libraries-api/installing-an-external-library-that-is-required-by-a-contributed-module)
+
+Since Drupal 8, these tasks have been automated for complex sites, the preferred update method is now [Composer](https://medium.com/@ChandeepKhosa/updating-drupal-8-with-composer-a-step-by-step-tutorial-119caf638bc). For Drupal websites that rely heavily on custom modules and their dependency trees this is excellent. Composer resolves this by updating the libraries centrally in the vendor folder. This means you are required to use this method to update your site instead of manually overwriting the drupal core files in vendor, unless you use Ludwig.
+
+However, if you have a simple site setup (one **without modules that rely on libs**) you may not want to use Composer. It requires a site admin to have knowledge of a development tool, open firewall to various sources..  In this case you may continue updating via the old method. That is, downloading the latest Drupal release, clearing/overwriting the files in vendor either via drush, or getting the [Drupal release tarball](https://www.drupal.org/project/drupal/releases).
+
+Why you MUST use composer or Ludwig when you need external libaries for modules?
+*Due to the way Composer works, these libraries can't be manually uploaded to the site's vendor folder. Instead, Composer must be used to download the module, which then pulls in the required libraries. Once Composer is used to manage a single module, it also needs to be used to manage and update Drupal core, since manual Drupal core updates replace the vendor/ folder, removing the downloaded libraries.* [Quote Ludwig project](https://www.drupal.org/project/ludwig)
+
+
+
 Copyright & licensing
 ---
-  ©© wethinkonline.be 2019
+  ©© wethinkonline.be 2019 - https://www.wethinkonline.be
 
  License: GNU Lesser General Public License version 3
           see file LICENSE
